@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NutriTrack – Daily Calorie and Nutrient Tracker</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7c3aed">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NutriTrack">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f4f6fb;--card:#fff;--ink:#1b2440;--mute:#68738f;--line:#e2e7f2;--track:#e9edf6;
@@ -57,6 +65,9 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--fib);outli
 .legend{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-top:4px}
 .gw{grid-column:1/-1;display:flex;gap:6px;align-items:center;font-size:13px;color:var(--mute)}.gw input{width:80px}
 .sv{grid-column:1/-1;display:flex;gap:8px;align-items:center;color:var(--ink);margin:2px 0}.sv input{width:auto}
+.hero select,.hero button{width:auto;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:9px;padding:9px 11px;font:inherit;cursor:pointer}.hero option{color:#000}
+textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
+nav button{font-size:13px}
 .fx .fq,.fx .fu{display:none}.edw{border-top:1px solid var(--line);padding-top:8px}.row .eb{color:var(--pro);font-size:16px}
 .hide{display:none}
 @media(max-width:480px){.ring svg{flex-basis:110px;width:110px;height:110px}.mgrid{grid-template-columns:1fr 1fr}}
@@ -64,8 +75,8 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--fib);outli
 </head>
 <body>
 <div class="wrap">
-<div class="hero"><div><h1>NutriTrack</h1><p>Calories, protein, carbs, fat and fibre in one place</p></div><input type="date" id="date" aria-label="Date"></div>
-<nav id="nav"><button data-t="profile">Profile</button><button data-t="log">Food log</button><button data-t="dash">Dashboard</button></nav>
+<div class="hero"><div><h1>NutriTrack</h1><p>Calories, protein, carbs, fat and fibre in one place</p></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button id="installBtn" class="hide" aria-label="Install app">Install app</button><select id="who" aria-label="Family member"></select><button id="addWho" aria-label="Add family member">+</button><input type="date" id="date" aria-label="Date"></div></div>
+<nav id="nav"><button data-t="profile">Profile</button><button data-t="log">Food log</button><button data-t="dash">Dashboard</button><button data-t="plan">Plan</button><button data-t="coach">Coach</button></nav>
 
 <section id="profile" class="hide"><div class="card">
  <h2>Your health details</h2>
@@ -92,7 +103,22 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--fib);outli
  <div id="pres" class="stats hide"></div>
 </div></section>
 
-<section id="log" class="hide"><div class="card" id="logTop"></div><div id="meals"></div></section>
+<section id="log" class="hide"><div class="card" id="logTop"></div>
+<div class="card" id="voice"><h2>Voice or quick logging</h2><div class="grid" style="grid-template-columns:auto 1fr auto"><button class="btn" id="mic" style="width:auto">🎤 Speak</button><input id="vtext" placeholder="e.g. two rotis and dal for lunch"><button class="btn" id="vgo" style="width:auto">Add</button></div><div class="mute" id="vres" style="margin-top:6px"></div></div><div id="meals"></div></section>
+<section id="plan" class="hide">
+ <div class="card"><h2>What should I eat tomorrow?</h2><div class="grid"><label style="display:flex;gap:6px;align-items:center;color:var(--ink)"><input type="checkbox" id="veg" style="width:auto"> Vegetarian only</label><select id="pdays"><option value="1">Tomorrow</option><option value="7">Next 7 days</option></select></div><div style="margin-top:10px"><button class="btn" id="genPlan">Generate meal plan</button></div><div id="planOut"></div></div>
+ <div class="card"><h2>Shopping list</h2><div id="shopOut" class="mute">Generate a meal plan to get your list.</div></div>
+ <div class="card"><h2>Predicted eating behaviour</h2><div id="predOut"></div></div>
+ <div class="card"><h2>Smart food swaps</h2><div id="swapOut"></div></div>
+ <div class="card"><h2>Eating while travelling</h2><select id="tmode"></select><div id="travOut" style="margin-top:8px"></div></div>
+</section>
+<section id="coach" class="hide">
+ <div class="card"><h2>AI food scanner</h2><p class="mute" style="margin-top:0">Photograph your plate. AI identifies foods and estimates portions in grams. Needs an API key (see AI settings below).</p><div class="grid"><div><label>Log into</label><select id="aiMeal"></select></div><div><label>Hint (optional)</label><input id="scanHint" placeholder="e.g. 2 rotis, dal"></div></div><div style="margin:10px 0"><input type="file" id="scanFile" accept="image/*" capture="environment"></div><button class="btn" id="scanBtn">Scan and estimate</button><div id="scanOut"></div></div>
+ <div class="card"><h2>Restaurant dish or menu estimator</h2><textarea id="menuTxt" rows="3" placeholder="Type a dish (e.g. butter chicken with 2 naan) or paste menu text"></textarea><div style="margin:8px 0"><input type="file" id="menuFile" accept="image/*"></div><button class="btn" id="menuBtn">Estimate nutrition</button><div id="menuOut"></div></div>
+ <div class="card"><h2>Recipes from ingredients</h2><input id="ingTxt" placeholder="e.g. egg, tomato, onion, rice"><div style="margin:8px 0"><input type="file" id="ingFile" accept="image/*" capture="environment"></div><div class="grid"><button class="btn" id="recBtn">Find recipes</button><button class="btn" id="recAI">Ask AI (text or photo)</button></div><div id="recOut"></div></div>
+ <div class="card"><h2>Nutrition assistant</h2><div id="chat"></div><div class="tabs" style="margin:8px 0"><button class="chip" style="--c:var(--fib)" data-q="Review my day and tell me what to eat for the rest of it.">Review my day</button><button class="chip" style="--c:var(--pro)" data-q="How can I increase my protein today?">More protein</button><button class="chip" style="--c:var(--carb)" data-q="Suggest a dinner under 400 kcal.">Light dinner</button></div><div class="grid" style="grid-template-columns:1fr auto"><input id="chatIn" placeholder="Ask anything about your food"><button class="btn" id="chatSend" style="width:auto">Send</button></div></div>
+ <div class="card"><h2>AI settings</h2><p class="mute" style="margin-top:0">The scanner, estimator, assistant and AI recipes call the Anthropic API using your own key. It is stored only in this browser and sent only to Anthropic. Use a key with a low spend limit.</p><label>API key</label><input id="keyIn" type="password" placeholder="sk-ant-…" autocomplete="off"><label style="margin-top:8px">Model</label><input id="modelIn"><div class="grid" style="margin-top:10px"><button class="btn" id="keySave">Save</button><button class="btn" id="keyClear" style="background:var(--mute)">Remove key</button></div></div>
+</section>
 
 <section id="dash" class="hide">
  <div class="card"><h2>Today’s calories</h2><div class="ring" id="todayRing"></div><div id="todayMeals" style="margin-top:12px"></div></div>
@@ -314,8 +340,10 @@ const allFoods=()=>{const o=[];let cu="";DB.split("\n").forEach(l=>{if(l[0]==="#
 const $=id=>document.getElementById(id);
 const r1=n=>Math.round(n*10)/10;
 let profile=null,logs={},metric="kcal";
-function load(){try{profile=JSON.parse(localStorage.getItem("nt_profile")||"null");logs=JSON.parse(localStorage.getItem("nt_logs")||"{}");cust=JSON.parse(localStorage.getItem("nt_foods")||"[]")}catch(e){profile=null;logs={};cust=[]}}
-function save(){try{localStorage.setItem("nt_profile",JSON.stringify(profile));localStorage.setItem("nt_logs",JSON.stringify(logs));localStorage.setItem("nt_foods",JSON.stringify(cust))}catch(e){}}
+let pid="p1",fam=[{id:"p1",name:"Me"}];
+const K=n=>pid==="p1"?n:n+"_"+pid;
+function load(){try{fam=JSON.parse(localStorage.getItem("nt_fam")||"null")||fam;pid=localStorage.getItem("nt_pid")||"p1";if(!fam.some(x=>x.id===pid))pid=fam[0].id;profile=JSON.parse(localStorage.getItem(K("nt_profile"))||"null");logs=JSON.parse(localStorage.getItem(K("nt_logs"))||"{}");cust=JSON.parse(localStorage.getItem("nt_foods")||"[]")}catch(e){profile=null;logs={};cust=[]}}
+function save(){try{localStorage.setItem(K("nt_profile"),JSON.stringify(profile));localStorage.setItem(K("nt_logs"),JSON.stringify(logs));localStorage.setItem("nt_foods",JSON.stringify(cust));localStorage.setItem("nt_fam",JSON.stringify(fam));localStorage.setItem("nt_pid",pid)}catch(e){}}
 const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 $("date").value=iso(new Date());$("month").value=$("date").value.slice(0,7);
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -402,7 +430,7 @@ function donut(parts){
  if(!total)return `<svg viewBox="0 0 130 130"><circle cx="65" cy="65" r="${r}" fill="none" stroke="var(--track)" stroke-width="22"/></svg>`;
  return `<svg viewBox="0 0 130 130" role="img" aria-label="Calorie split">`+parts.map(x=>{const len=x.v/total*c,s=`<circle cx="65" cy="65" r="${r}" fill="none" stroke="var(${x.col})" stroke-width="22" stroke-dasharray="${len} ${c-len}" stroke-dashoffset="${-off}" transform="rotate(-90 65 65)"/>`;off+=len;return s}).join("")+`</svg>`;
 }
-function renderDash(){
+function renderDash(){renderExtras();
  const tg=calc(profile).t,today=iso(new Date()),t=dayTot(today),l=logs[today]||{};
  $("todayRing").innerHTML=ring(t.kcal,tg.kcal)+`<div><div class="big">${Math.round(t.kcal)}</div><div class="mute">of ${tg.kcal} kcal eaten today</div><div style="margin-top:6px;font-weight:500">${t.kcal>tg.kcal?Math.round(t.kcal-tg.kcal)+" kcal over":Math.round(tg.kcal-t.kcal)+" kcal remaining"}</div></div>`;
  const mcol={breakfast:"--carb",lunch:"--cal",dinner:"--pro",snacks:"--fat"};
@@ -423,16 +451,179 @@ function renderDash(){
 
 function tab(t){ed=null;
  if(t!=="profile"&&!profile)t="profile";
- ["profile","log","dash"].forEach(s=>$(s).classList.toggle("hide",s!==t));
+ ["profile","log","dash","plan","coach"].forEach(s=>$(s).classList.toggle("hide",s!==t));
  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
- if(t==="log")renderLog();if(t==="dash")renderDash();
+ if(t==="log")renderLog();if(t==="dash")renderDash();if(t==="plan")renderPlan();if(t==="coach")renderCoach();
  try{history.replaceState(null,"","#"+t)}catch(e){}
 }
 document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>tab(b.dataset.t));
 $("date").onchange=()=>{ed=null;if(!$("log").classList.contains("hide"))renderLog()};
 $("month").onchange=renderDash;
-load();fillProfile();
-const h=location.hash.slice(1);tab(profile?(["log","dash","profile"].includes(h)?h:"log"):"profile");
+const todayS=()=>iso(new Date()),nameOf=n=>n.replace(/\s*\(.*\)/,"");
+const dAdd=(d,n)=>{const x=new Date(d+"T00:00");x.setDate(x.getDate()+n);return iso(x)};
+const dkeys=()=>Object.keys(logs).filter(k=>dayTot(k).kcal>0).sort();
+const cnt=d=>MEALS.filter(m=>((logs[d]||{})[m[0]]||[]).length).length;
+const mk=(f,q)=>({name:f[0],qty:q,u:"s",w:gram(f[0]),b:{kcal:f[1],p:f[2],c:f[3],f:f[4],fb:f[5]},kcal:Math.round(f[1]*q),p:r1(f[2]*q),c:r1(f[3]*q),f:r1(f[4]*q),fb:r1(f[5]*q)});
+const mkAI=x=>{const g=+x.grams||0,b={kcal:+x.kcal||0,p:+x.p||0,c:+x.c||0,f:+x.f||0,fb:+x.fb||0};return{name:String(x.name),qty:g||1,u:g?"g":"s",w:g||100,b,kcal:Math.round(b.kcal),p:r1(b.p),c:r1(b.c),f:r1(b.f),fb:r1(b.fb)}};
+const DAYS=["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"];
+/* family profiles */
+function renderWho(){$("who").innerHTML=fam.map(m=>`<option value="${m.id}" ${m.id===pid?"selected":""}>${esc(m.name)}</option>`).join("")}
+function resetForm(){["p_name","p_age","p_h","p_w","p_tw","p_note"].forEach(i=>$(i).value="");$("pres").classList.add("hide")}
+function switchProfile(){load();resetForm();fillProfile();renderWho();tab(profile?"log":"profile")}
+$("who").onchange=()=>{try{localStorage.setItem("nt_pid",$("who").value)}catch(e){}switchProfile()};
+$("addWho").onclick=()=>{const n=prompt("Family member’s name?");if(!n||!n.trim())return;const id="p"+Date.now();fam.push({id,name:n.trim()});try{localStorage.setItem("nt_fam",JSON.stringify(fam));localStorage.setItem("nt_pid",id)}catch(e){}switchProfile()};
+/* game */
+function gameStats(){const tg=calc(profile).t,ds=dkeys();let xp=0,run=0,best=0,okD=0,proD=0,fibD=0,prev=null;
+ ds.forEach(d=>{const t=dayTot(d),n=MEALS.reduce((a,m)=>a+(logs[d][m[0]]||[]).length,0);let x=5*Math.min(n,8);
+  if(cnt(d)>=3&&Math.abs(t.kcal-tg.kcal)<=tg.kcal*.1){x+=20;okD++}if(t.p>=tg.p*.9){x+=15;proD++}if(t.fb>=tg.fb*.9){x+=15;fibD++}
+  run=prev&&dAdd(prev,1)===d?run+1:1;best=Math.max(best,run);prev=d;xp+=x+Math.min(run,7)*2});
+ const td=todayS();return{xp,lvl:Math.floor(xp/200)+1,streak:prev&&(prev===td||dAdd(prev,1)===td)?run:0,best,okD,proD,fibD,n:ds.length}}
+function weeklyHtml(){
+ const tg=calc(profile).t,td=todayS(),rows=[];for(let i=6;i>=0;i--){const d=dAdd(td,-i);rows.push({d,t:dayTot(d)})}
+ const lg=rows.filter(r=>r.t.kcal>0);if(!lg.length)return`<h2>Weekly eating pattern</h2><div class="mute">Log a few days and your weekly report appears here.</div>`;
+ const av=k=>lg.reduce((a,r)=>a+r.t[k],0)/lg.length,ms={};MEALS.forEach(([k])=>ms[k]=lg.reduce((a,r)=>a+tot((logs[r.d]||{})[k]).kcal,0));
+ const tm=Object.values(ms).reduce((a,b)=>a+b,0)||1,big=MEALS.map(m=>[m[1],ms[m[0]]/tm]).sort((a,b)=>b[1]-a[1])[0],ka=av("kcal"),sp=(av("p")+av("c"))*4+av("f")*9||1,ins=[];
+ const ok=lg.filter(r=>Math.abs(r.t.kcal-tg.kcal)<=tg.kcal*.1).length;
+ ins.push(`Average ${Math.round(ka)} kcal/day (${Math.round(ka/tg.kcal*100)}% of target); ${ok} of ${lg.length} logged days within 10%.`);
+ ins.push(`Macro split: protein ${Math.round(av("p")*400/sp)}%, carbs ${Math.round(av("c")*400/sp)}%, fat ${Math.round(av("f")*900/sp)}% (goal 20/50/30).`);
+ if(av("fb")<tg.fb*.8)ins.push(`Fibre averages ${r1(av("fb"))} g vs ${tg.fb} g goal. Add dal, vegetables, fruit or whole grains.`);
+ if(av("p")<tg.p*.8)ins.push(`Protein averages ${r1(av("p"))} g vs ${tg.p} g goal. Add eggs, paneer, dal, curd or chicken.`);
+ if(big[1]>.4)ins.push(`${big[0]} is ${Math.round(big[1]*100)}% of your calories. Try spreading meals more evenly.`);
+ const we=lg.filter(r=>[0,6].includes(new Date(r.d+"T00:00").getDay())),wd=lg.filter(r=>!we.includes(r));
+ if(we.length&&wd.length){const a=we.reduce((s,r)=>s+r.t.kcal,0)/we.length,b=wd.reduce((s,r)=>s+r.t.kcal,0)/wd.length;if(a>b*1.15)ins.push(`Weekends run ${Math.round((a/b-1)*100)}% higher than weekdays.`)}
+ const mx=Math.max(tg.kcal*1.2,...rows.map(r=>r.t.kcal)),mc={breakfast:"--carb",lunch:"--cal",dinner:"--pro",snacks:"--fat"};
+ return`<div class="meal-h"><h2 style="margin:0">Weekly eating pattern</h2><button id="copyWk" class="btn" style="width:auto;padding:6px 12px">Copy</button></div><div class="chart" style="height:110px">${rows.map(r=>`<div style="height:${Math.max(2,r.t.kcal/mx*100)}%;background:var(${r.t.kcal>tg.kcal*1.1?"--over":"--cal"});opacity:${r.t.kcal?1:.2}"></div>`).join("")}</div><div class="legend">${rows.map(r=>`<span>${"SMTWTFS"[new Date(r.d+"T00:00").getDay()]}</span>`).join("")}</div><div style="margin-top:10px">${MEALS.map(m=>`<div class="meal-h" style="margin:0"><span>${m[1]}</span><span>${Math.round(ms[m[0]]/tm*100)}%</span></div><div class="bar"><i style="width:${ms[m[0]]/tm*100}%;background:var(${mc[m[0]]})"></i></div>`).join("")}</div><ul style="padding-left:18px;margin:10px 0 0">${ins.map(i=>`<li>${i}</li>`).join("")}</ul>`}
+function renderExtras(){
+ let g=$("game");if(!g){g=document.createElement("div");g.id="game";g.className="card";$("dash").prepend(g)}
+ let w=$("weekly");if(!w){w=document.createElement("div");w.id="weekly";w.className="card";$("dash").appendChild(w)}
+ const G=gameStats(),tg=calc(profile).t,td=todayS(),t=dayTot(td);
+ const Q=[["Log 3 meals",cnt(td)>=3],["Stay within 10% of your calories",cnt(td)>=3&&Math.abs(t.kcal-tg.kcal)<=tg.kcal*.1],["Hit your protein goal",t.p>=tg.p*.9],["Hit your fibre goal",t.fb>=tg.fb*.9]];
+ const B=[["First log",G.n>=1],["7-day streak",G.best>=7],["30 days logged",G.n>=30],["Calorie master",G.okD>=10],["Protein pro",G.proD>=10],["Fibre hero",G.fibD>=10]];
+ g.innerHTML=`<div class="meal-h"><h2 style="margin:0">Level ${G.lvl}</h2><b>🔥 ${G.streak}-day streak</b></div><div class="bar"><i style="width:${G.xp%200/2}%;background:linear-gradient(90deg,var(--pro),var(--fib))"></i></div><div class="mute">${G.xp} XP · ${200-G.xp%200} XP to level ${G.lvl+1}</div><h2 style="margin:12px 0 6px;font-size:15px">Today’s quests</h2>${Q.map(q=>`<div>${q[1]?"✅":"⬜"} ${q[0]}</div>`).join("")}<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">${B.map(b=>`<span style="padding:4px 10px;border-radius:20px;font-size:12px;border:1px solid var(--line);${b[1]?"background:var(--carb);color:#1b2440":"opacity:.45"}">${b[0]}</span>`).join("")}</div>`;
+ w.innerHTML=weeklyHtml();const cp=$("copyWk");if(cp)cp.onclick=()=>{try{navigator.clipboard.writeText(w.innerText)}catch(e){}cp.textContent="Copied"}}
+/* voice logging */
+const NUMW={a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,half:.5};
+const ALIAS={rice:"Cooked white rice (1 cup)",dal:"Dal tadka (1 bowl)",egg:"Boiled egg (1)",milk:"Milk, toned (1 glass)",tea:"Tea with milk and sugar (1 cup)",coffee:"Coffee with milk and sugar (1 cup)",bread:"White bread slice (1)",chicken:"Chicken curry (1 bowl)",paneer:"Paneer butter masala (1 bowl)",pizza:"Margherita pizza (1 slice)",noodles:"Hakka noodles (1 plate)",chapati:"Roti / chapati (1)",curd:"Curd / dahi (1 bowl)",oats:"Oats porridge (1 bowl)",salad:"Garden salad (1 bowl)"};
+function parseSpeech(txt){
+ txt=" "+txt.toLowerCase()+" ";const h=new Date().getHours(),meal=/breakfast/.test(txt)?"breakfast":/lunch/.test(txt)?"lunch":/dinner|supper/.test(txt)?"dinner":/snack|evening/.test(txt)?"snacks":h<11?"breakfast":h<16?"lunch":h<18?"snacks":"dinner";
+ const all=allFoods(),keys=[];all.forEach(f=>nameOf(f[0]).toLowerCase().split(" / ").forEach(k=>keys.push([k.trim(),f])));
+ Object.entries(ALIAS).forEach(([k,n])=>{const f=all.find(x=>x[0]===n);if(f)keys.push([k,f])});
+ keys.sort((a,b)=>b[0].length-a[0].length);const found=[];
+ keys.forEach(([k,f])=>{const re=new RegExp("(?:\\b(\\d+(?:\\.\\d+)?|"+Object.keys(NUMW).join("|")+")\\s+(?:(?:cups?|bowls?|glass(?:es)?|pieces?|slices?|plates?)\\s+of\\s+)?)?\\b"+k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"(?:e?s)?\\b");
+  const m=txt.match(re);if(m){found.push([f,m[1]?(NUMW[m[1]]||+m[1]):1]);txt=txt.replace(re," ")}});
+ return{meal,found}}
+function doVoice(){const t=$("vtext").value.trim();if(!t)return;const r=parseSpeech(t),d=$("date").value;
+ if(!r.found.length){$("vres").textContent="I couldn’t match a food. Try “two rotis and dal for lunch”, or add it manually below.";return}
+ r.found.forEach(([f,q])=>dayItems(d)[r.meal].push(mk(f,q)));save();$("vtext").value="";renderLog();
+ $("vres").textContent="Added to "+r.meal+": "+r.found.map(x=>x[1]+" × "+nameOf(x[0][0])).join(", ")}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+$("mic").onclick=()=>{if(!SR){alert("Voice input isn’t supported in this browser. Type your meal instead.");return}const r=new SR();r.lang="en-IN";r.onresult=e=>{$("vtext").value=e.results[0][0].transcript;doVoice()};r.onend=()=>$("mic").textContent="🎤 Speak";$("mic").textContent="Listening…";r.start()};
+$("vgo").onclick=doVoice;
+/* planning engines */
+const BAD=/beer|wine|cola|whey|chips|donut|cake|brownie|cookie|chocolate|ice cream|jalebi|gulab|rasgulla|halwa|kheer|mochi|muffin|samosa|pakora|fries|vada pav|nuggets|fried chicken|pani puri|butter \(/i,NV=/chicken|egg|fish|mutton|beef|pepperoni|steak|duck|sashimi|salmon|nigiri|omelette|teriyaki|bolognese|hot dog|satay|prawn/i;
+const POOL={breakfast:/idli|dosa|poha|upma|oats|egg|omelette|toast|muesli|cornflakes|pancake|paratha|uttapam|curd|banana|milk|bread|khichdi|apple|papaya/i,lunch:/rice|roti|chapati|dal|rajma|chole|curry|paneer|sambar|salad|khichdi|biryani|vegetable|aloo|bhindi|palak|tikka|fish|raita|curd|noodles|pasta|soup|tofu|stir fry|sandwich|bibimbap|tandoori|grilled/i,snacks:/apple|banana|orange|guava|papaya|almonds|walnuts|cashews|sprouts|chickpeas|curd|buttermilk|popcorn|greek|peanuts|coconut water|strawberries|pomegranate|tea|edamame/i};
+POOL.dinner=POOL.lunch;
+const rng=s=>()=>(s=(s*1664525+1013904223)>>>0)/4294967296;
+function planDay(seed,veg,tg){const R=rng(seed),all=allFoods().filter(f=>!BAD.test(f[0])&&!(veg&&NV.test(f[0]))),sp={breakfast:.25,lunch:.35,dinner:.3,snacks:.1},out={};
+ MEALS.forEach(([k])=>{const T=tg.kcal*sp[k],pool=all.filter(f=>POOL[k].test(f[0])&&f[1]>=30&&f[1]<=T);let best=[],bs=1e9;
+  for(let i=0;i<300&&pool.length;i++){const n=2+(R()*2|0),c=[];for(let j=0;j<n;j++)c.push(pool[R()*pool.length|0]);if(new Set(c.map(x=>x[0])).size<n)continue;
+   const s=c.reduce((a,f)=>[a[0]+f[1],a[1]+f[2],a[2]+f[5]],[0,0,0]),sc=Math.abs(s[0]-T)/T-s[1]/Math.max(1,s[0])*2-s[2]/Math.max(1,s[0])*6;if(sc<bs){bs=sc;best=c}}
+  out[k]=best});return out}
+let plan=null;
+const ING=[[/roti|chapati|paratha|naan|puri/,"Wheat flour (atta)","Grains"],[/rice|biryani|khichdi|bibimbap/,"Rice","Grains"],[/idli|dosa|uttapam|vada/,"Idli-dosa batter","Grains"],[/poha|upma/,"Poha / semolina","Grains"],[/oats|muesli|cornflakes/,"Oats / cereal","Grains"],[/bread|toast|sandwich|burger/,"Bread","Grains"],[/pasta|spaghetti|noodles/,"Pasta / noodles","Grains"],[/dal|rajma|chole|sambar|moong|chickpea|sprouts|edamame/,"Lentils / pulses","Pulses"],[/paneer/,"Paneer","Dairy"],[/curd|dahi|raita|lassi|buttermilk|yogurt/,"Curd / yogurt","Dairy"],[/milk|tea/,"Milk","Dairy"],[/egg|omelette/,"Eggs","Protein"],[/chicken/,"Chicken","Protein"],[/fish|salmon/,"Fish","Protein"],[/mutton/,"Mutton","Protein"],[/tofu/,"Tofu","Protein"],[/apple|banana|orange|guava|papaya|mango|grapes|strawberr|pomegranate|pineapple|watermelon|avocado/,"Fruits (seasonal)","Fruits"],[/salad|vegetable|aloo|bhindi|palak|gobi|veg /,"Fresh vegetables","Vegetables"],[/almonds|walnuts|cashews|peanuts/,"Nuts","Pantry"],[/soup|miso/,"Soup ingredients","Pantry"]];
+function shopHtml(){const o=$("shopOut");if(!plan){return}const m={};
+ plan.days.forEach(d=>MEALS.forEach(([k])=>d.m[k].forEach(n=>{const r=ING.find(x=>x[0].test(n.toLowerCase()))||[0,nameOf(n),"Other"];m[r[1]]=m[r[1]]||{c:r[2],n:0};m[r[1]].n++})));
+ const g={};Object.entries(m).forEach(([k,v])=>(g[v.c]=g[v.c]||[]).push([k,v.n]));
+ o.innerHTML=Object.entries(g).map(([c,a])=>`<div style="margin-top:8px"><b>${c}</b>${a.map(([k,n])=>`<label style="display:flex;gap:8px;align-items:center;color:var(--ink);margin:4px 0"><input type="checkbox" style="width:auto"> ${esc(k)} <span class="mute">× ${n} servings</span></label>`).join("")}</div>`).join("")+`<button class="btn" id="copyShop" style="margin-top:10px">Copy list</button>`;
+ $("copyShop").onclick=()=>{try{navigator.clipboard.writeText(Object.entries(g).map(([c,a])=>c+":\n"+a.map(x=>"- "+x[0]+" x"+x[1]).join("\n")).join("\n\n"))}catch(e){}$("copyShop").textContent="Copied"}}
+function predHtml(){
+ const tg=calc(profile).t,ds=dkeys();if(ds.length<3)return'<div class="mute">Log at least 3 days to unlock predictions.</div>';
+ const tm=dAdd(todayS(),1),wd=new Date(tm+"T00:00").getDay(),same=ds.filter(d=>new Date(d+"T00:00").getDay()===wd),use=same.length>=2?same:ds,pk=use.reduce((a,d)=>a+dayTot(d).kcal,0)/use.length;
+ const ideal={breakfast:.25,lunch:.35,dinner:.3,snacks:.1},dev=MEALS.map(([k,n])=>[n,ds.reduce((a,d)=>a+tot((logs[d]||{})[k]).kcal,0)/ds.length/tg.kcal-ideal[k]]).sort((a,b)=>b[1]-a[1]);
+ const out=[`Expected intake tomorrow: about ${Math.round(pk)} kcal (${Math.round(pk/tg.kcal*100)}% of target)${same.length>=2?", based on your past "+DAYS[wd]:""}.`];
+ if(dev[0][1]>.05)out.push(`You are most likely to overeat at ${dev[0][0]}. Plan that meal first and measure portions.`);
+ MEALS.forEach(([k,n])=>{const c={};ds.forEach(d=>((logs[d]||{})[k]||[]).forEach(x=>c[x.name]=(c[x.name]||0)+1));const t=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,2).map(e=>nameOf(e[0]));if(t.length)out.push(`${n}: you usually have ${t.join(" and ")}.`)});
+ return`<ul style="padding-left:18px;margin:0">${out.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>`}
+function swapHtml(){
+ const it=[];MEALS.forEach(([k])=>((logs[todayS()]||{})[k]||[]).forEach(x=>it.push([x,k])));
+ const ST=[["Samosa","roasted chana or sprouts chaat"],["French fries","baked potato or air-fried wedges"],["Cola","soda water with lime, or coconut water"],["Naan","roti or missi roti"],["White rice","brown rice, or half rice plus extra veg"],["Cream-based curry","tomato-based curry or dal"]];
+ const sc=f=>(f[2]*4+f[5]*8)/Math.max(f[1],1),rows=it.sort((a,b)=>b[0].kcal-a[0].kcal).slice(0,3).map(([x,k])=>{const xs=(x.p*4+x.fb*8)/Math.max(x.kcal,1),c=allFoods().filter(f=>!BAD.test(f[0])&&POOL[k].test(f[0])&&f[1]>=x.kcal*.2&&f[1]<=x.kcal*.8&&sc(f)>xs&&f[0]!==x.name).sort((a,b)=>sc(b)-sc(a)).slice(0,3);
+  return c.length?`<div style="margin-bottom:8px"><b>${esc(x.name)}</b> (${Math.round(x.kcal)} kcal)<br>${c.map(f=>`⇄ ${esc(f[0])}: ${f[1]} kcal, saves ${Math.round(x.kcal-f[1])}`).join("<br>")}</div>`:""}).filter(Boolean);
+ return(rows.length?rows.join(""):'<div class="mute">Log food today and I will suggest lighter, higher-fibre, higher-protein swaps.</div>')+`<h2 style="margin:10px 0 6px;font-size:15px">Common swaps</h2>`+ST.map(s=>`<div>${s[0]} → <b>${s[1]}</b></div>`).join("")}
+const TRAVEL={"Flight / airport":[["Grilled chicken, egg or paneer sandwich instead of pastry",350],["Carry nuts or fruit",180],["Water or black coffee, skip sugary drinks",5],["Dal-rice or veg meal, skip dessert",450]],
+"Road trip / highway":[["Idli, upma or poha for breakfast",250],["Dal + 2 roti + salad instead of buttery paratha",450],["Buttermilk or coconut water instead of cola",45],["Roasted chana, fruit or nuts from home",150]],
+"Train journey":[["Roti-sabzi or sandwich packed from home",400],["Boiled eggs, fruit, curd",250],["Roasted makhana or chana instead of fried snacks",120],["Tea with less sugar",40]],
+"Hotel buffet":[["Half plate salad and veg, quarter protein, quarter carbs",500],["Eggs + fruit + idli at breakfast",350],["One small dessert portion, not a plate",150],["Grilled over fried; clear soup over cream soup",200]],
+"Street food":[["Sprouts chaat, bhel or grilled tikka over fried items",250],["Share one fried item and add a salad or fruit",200],["Dosa, idli or roti rolls are better bets",200],["Nimbu pani without sugar",30]],
+"Abroad / fast food":[["Grilled chicken wrap or bowl instead of burger and fries",450],["Small size, skip sauces and sweet drinks",300],["Sushi, pho, poke bowl or tandoori",400],["Salad or soup starter before the main",100]]};
+$("tmode").innerHTML=Object.keys(TRAVEL).map(k=>`<option>${k}</option>`).join("");
+function travel(){const left=Math.round(calc(profile).t.kcal-dayTot($("date").value).kcal);$("travOut").innerHTML=`<div class="mute">${left>0?left+" kcal left for the selected day.":Math.abs(left)+" kcal over, so pick lighter options."}</div>`+TRAVEL[$("tmode").value].map(x=>`<div class="row"><span>${x[0]}</span><b>~${x[1]} kcal</b></div>`).join("")}
+$("tmode").onchange=travel;
+function renderPlan(){try{plan=JSON.parse(localStorage.getItem("nt_plan_"+pid)||"null")}catch(e){plan=null}
+ $("planOut").innerHTML=plan?plan.days.map(d=>`<div style="margin-top:12px"><b>${new Date(d.date+"T00:00").toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"short"})}</b> · ${d.kcal} kcal · P ${d.p}g · Fibre ${d.fb}g${MEALS.map(([k,n])=>`<div class="row"><span>${n}<small>${d.m[k].map(esc).join(", ")}</small></span><span>${d.mk[k]} kcal</span></div>`).join("")}</div>`).join(""):"";
+ shopHtml();$("predOut").innerHTML=predHtml();$("swapOut").innerHTML=swapHtml();travel()}
+$("genPlan").onclick=()=>{const n=+$("pdays").value,tg=calc(profile).t,veg=$("veg").checked,seed=Date.now()%100000,days=[];
+ for(let i=1;i<=n;i++){const r=planDay(seed+i*7919,veg,tg),d={date:dAdd(todayS(),i),m:{},mk:{},kcal:0,p:0,fb:0};
+  MEALS.forEach(([k])=>{d.m[k]=r[k].map(f=>f[0]);d.mk[k]=Math.round(r[k].reduce((a,f)=>a+f[1],0));d.kcal+=d.mk[k];d.p+=r[k].reduce((a,f)=>a+f[2],0);d.fb+=r[k].reduce((a,f)=>a+f[5],0)});
+  d.p=Math.round(d.p);d.fb=Math.round(d.fb);days.push(d)}
+ plan={days};try{localStorage.setItem("nt_plan_"+pid,JSON.stringify(plan))}catch(e){}renderPlan()};
+/* AI features (optional API key) */
+async function ai(system,messages,max){const key=localStorage.getItem("nt_key");if(!key)throw new Error("Add your API key under Coach → AI settings to use this feature.");
+ const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:localStorage.getItem("nt_model")||"claude-sonnet-5-5",max_tokens:max||1500,system,messages})});
+ const j=await r.json();if(!r.ok)throw new Error((j.error&&j.error.message)||"AI request failed");return j.content.map(c=>c.text||"").join("")}
+const img64=f=>new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const s=Math.min(1,1024/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL("image/jpeg",.8).split(",")[1])};im.onerror=rej;im.src=u});
+const JS_='Return ONLY a JSON array with no markdown. Each element: {"name":string,"grams":number (only for foods in a photo),"kcal":number,"p":number,"c":number,"f":number,"fb":number,"note":short string}. Values are totals for that item or portion; p,c,f,fb are grams of protein, carbs, fat, fibre. Be realistic.';
+function show(out,a){out.innerHTML=a.map((x,i)=>`<div class="row"><span>${esc(String(x.name))}${x.grams?" · "+x.grams+" g":""}<small>${Math.round(+x.kcal||0)} kcal · P ${r1(+x.p||0)}g · C ${r1(+x.c||0)}g · F ${r1(+x.f||0)}g · Fibre ${r1(+x.fb||0)}g${x.note?"<br>"+esc(String(x.note)):""}</small></span><button data-i="${i}" style="color:var(--cal);font-size:14px">+ Add</button></div>`).join("")||'<div class="mute">Nothing found.</div>';
+ out.querySelectorAll("button").forEach(b=>b.onclick=()=>{dayItems($("date").value)[$("aiMeal").value].push(mkAI(a[+b.dataset.i]));save();b.textContent="Added ✓";b.disabled=true})}
+async function runAI(btn,out,sys,text,file){const old=btn.textContent;btn.disabled=true;btn.textContent="Working…";out.innerHTML="";
+ try{const c=[];if(file&&file.files[0])c.push({type:"image",source:{type:"base64",media_type:"image/jpeg",data:await img64(file.files[0])}});c.push({type:"text",text:text||"Analyse the image."});
+  const t=await ai(sys,[{role:"user",content:c}]);show(out,JSON.parse(t.slice(t.indexOf("["),t.lastIndexOf("]")+1)))}
+ catch(e){out.innerHTML=`<div style="color:var(--over)">${esc(e.message&&!/JSON/.test(e.message)?e.message:"Couldn’t read the AI reply. Please try again.")}</div>`}
+ btn.disabled=false;btn.textContent=old}
+$("scanBtn").onclick=()=>{if(!$("scanFile").files[0]){$("scanOut").innerHTML='<div style="color:var(--over)">Choose or take a photo first.</div>';return}runAI($("scanBtn"),$("scanOut"),JS_+" Identify every food in the photo and estimate each portion's weight in grams from visual cues such as plate size.","Foods hint from the user: "+($("scanHint").value||"none"),$("scanFile"))};
+$("menuBtn").onclick=()=>{if(!$("menuTxt").value.trim()&&!$("menuFile").files[0]){$("menuOut").innerHTML='<div style="color:var(--over)">Type a dish or add a menu photo.</div>';return}runAI($("menuBtn"),$("menuOut"),JS_+" Estimate nutrition for one typical restaurant serving of each dish in the text or photo (max 8 dishes). Use note for assumptions.",$("menuTxt").value,$("menuFile"))};
+$("recAI").onclick=()=>runAI($("recAI"),$("recOut"),JS_+" Suggest 3 healthy recipes using the ingredients given (text and/or photo). name = recipe name, nutrition per serving, note = missing ingredients plus a 2-line method.","Ingredients: "+($("ingTxt").value||"see photo")+". Daily goal: "+calc(profile).t.kcal+" kcal.",$("ingFile"));
+const REC=`Veg omelette|egg,onion,tomato,capsicum|220|14|5|16|1.5|Beat 2 eggs, add chopped veg, cook 3–4 min on a non-stick pan.
+Vegetable poha|poha,onion,peas,potato,peanut|280|6|45|8|3|Rinse poha, sauté onion, potato and peas with turmeric, fold in poha and peanuts.
+Dal khichdi|rice,dal,onion,tomato,turmeric|320|12|55|5|6|Pressure-cook rice and dal with turmeric and veg for 3 whistles.
+Paneer bhurji|paneer,onion,tomato,capsicum|290|17|8|21|2|Crumble paneer, sauté with onion, tomato and spices for 5 min.
+Chicken stir-fry|chicken,capsicum,onion,garlic,soy sauce|320|30|10|17|2|Sear chicken, add veg and sauce, toss on high heat 5 min.
+Chana salad|chickpea,onion,tomato,cucumber,lemon|240|11|36|5|9|Mix boiled chickpeas with chopped veg, lemon and chaat masala.
+Egg fried rice|rice,egg,peas,carrot,spring onion|390|12|56|13|3|Scramble egg, add cold rice and veg, stir-fry with soy sauce.
+Tomato pasta|pasta,tomato,garlic,onion,basil|420|13|75|8|5|Boil pasta, simmer tomato, garlic and onion into a sauce, toss together.
+Besan chilla|besan,onion,tomato,coriander|210|10|28|6|5|Whisk besan with water and veg, cook thin pancakes on a tawa.
+Oats banana smoothie|oats,banana,milk|280|11|45|6|5|Blend oats, banana and milk until smooth.
+Aloo gobi|potato,cauliflower,onion,tomato|150|4|20|7|4|Sauté onion and tomato with spices, add veg, cover and cook till soft.
+Palak dal|dal,spinach,onion,garlic|190|11|26|5|8|Cook dal, stir in sautéed garlic, onion and chopped spinach.
+Fish curry|fish,onion,tomato,coconut|260|24|8|15|2|Simmer onion-tomato-coconut gravy, add fish and cook 8 min.
+Curd rice|rice,curd,curry leaves,mustard|220|6|32|7|1|Mix cooked rice with curd, temper with mustard seeds and curry leaves.
+Sprouts sandwich|bread,sprouts,onion,tomato,cucumber|230|10|36|5|7|Fill toasted bread with sprouts and chopped veg.`;
+$("recBtn").onclick=()=>{const inp=$("ingTxt").value.toLowerCase().split(/,|;|\band\b|\n/).map(s=>s.trim().replace(/s$/,"")).filter(Boolean);
+ const r=REC.split("\n").map(l=>l.split("|")).map(a=>{const ing=a[1].split(","),hit=ing.filter(i=>inp.some(y=>i.includes(y)||y.includes(i)));return{name:a[0],kcal:+a[2],p:+a[3],c:+a[4],f:+a[5],fb:+a[6],hit,ing,note:`Have: ${hit.join(", ")}. Need: ${ing.filter(i=>!hit.includes(i)).join(", ")||"nothing more"}. ${a[7]}`}}).filter(x=>x.hit.length).sort((a,b)=>b.hit.length/b.ing.length-a.hit.length/a.ing.length).slice(0,5);
+ if(!inp.length)$("recOut").innerHTML='<div style="color:var(--over)">List a few ingredients first.</div>';else if(!r.length)$("recOut").innerHTML='<div class="mute">No built-in recipe matched. Try “Ask AI for recipes”.</div>';else show($("recOut"),r)};
+let chat=[];
+function drawChat(){$("chat").innerHTML=chat.map(m=>`<div style="margin:6px 0;padding:8px 10px;border-radius:10px;background:${m[0]==="u"?"var(--track)":"var(--bg)"}">${esc(m[1]).replace(/\n/g,"<br>")}</div>`).join("")}
+function ctx(){const tg=calc(profile).t,td=todayS();return JSON.stringify({profile:{age:profile.age,sex:profile.sex,height_cm:profile.h,weight_kg:profile.w,target_weight_kg:profile.tw,goal_kcal_adjust:profile.goal,notes:profile.note},daily_targets:tg,today:dayTot(td),today_foods:MEALS.map(([k])=>[k,((logs[td]||{})[k]||[]).map(x=>x.name)]),recent_days:dkeys().slice(-7).map(d=>({d,...dayTot(d)}))})}
+async function send(q){q=q.trim();if(!q)return;chat.push(["u",q]);$("chatIn").value="";drawChat();
+ try{const m=chat.slice(-8).map(x=>({role:x[0]==="u"?"user":"assistant",content:x[1]}));while(m.length&&m[0].role!=="user")m.shift();
+  chat.push(["a",await ai("You are NutriTrack’s friendly nutrition assistant for Indian and global diets. Use the user’s data below. Be concise (under 120 words), practical, give gram and kcal numbers. This is general guidance, not medical advice; for medical conditions suggest a doctor or dietitian.\nDATA: "+ctx(),m,700)])}
+ catch(e){chat.push(["a","⚠ "+e.message])}drawChat()}
+$("chatSend").onclick=()=>send($("chatIn").value);$("chatIn").onkeydown=e=>{if(e.key==="Enter")send($("chatIn").value)};
+document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>send(b.dataset.q));
+$("keySave").onclick=()=>{try{localStorage.setItem("nt_key",$("keyIn").value.trim());localStorage.setItem("nt_model",$("modelIn").value.trim()||"claude-sonnet-5-5")}catch(e){}$("keySave").textContent="Saved ✓"};
+$("keyClear").onclick=()=>{try{localStorage.removeItem("nt_key")}catch(e){}$("keyIn").value="";$("keySave").textContent="Save"};
+$("aiMeal").innerHTML=MEALS.map(m=>`<option value="${m[0]}">${m[1]}</option>`).join("");
+function renderCoach(){try{$("keyIn").value=localStorage.getItem("nt_key")||"";$("modelIn").value=localStorage.getItem("nt_model")||"claude-sonnet-5-5"}catch(e){}if(!chat.length)chat.push(["a","Hi! Ask me about today’s meals, protein, fibre, or what to eat next."]);drawChat()}
+
+load();renderWho();fillProfile();
+const h=location.hash.slice(1);tab(profile?(["log","dash","plan","coach","profile"].includes(h)?h:"log"):"profile");
+</script>
+<script>
+let dip=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();dip=e;document.getElementById("installBtn").classList.remove("hide")});
+document.getElementById("installBtn").onclick=async()=>{if(!dip)return;dip.prompt();await dip.userChoice;dip=null;document.getElementById("installBtn").classList.add("hide")};
+window.addEventListener("appinstalled",()=>document.getElementById("installBtn").classList.add("hide"));
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
 </body>
 </html>
