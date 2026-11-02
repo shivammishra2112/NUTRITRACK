@@ -26,7 +26,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "DM Sans",syst
 .hero h1{margin:0;font-size:22px}.hero p{margin:0;opacity:.9;font-size:13px}
 .hero input{width:auto;background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.4);color:#fff;color-scheme:dark}
 h2{font-size:17px;margin:0 0 10px}
-nav{display:flex;gap:4px;background:var(--track);padding:4px;border-radius:12px;margin-bottom:14px}
+nav{overflow-x:auto;display:flex;gap:4px;background:var(--track);padding:4px;border-radius:12px;margin-bottom:14px}
 nav button{flex:1;border:0;background:none;color:var(--mute);padding:9px 4px;border-radius:9px;font:inherit;font-weight:500;cursor:pointer}
 nav button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.15)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
@@ -67,7 +67,8 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--fib);outli
 .sv{grid-column:1/-1;display:flex;gap:8px;align-items:center;color:var(--ink);margin:2px 0}.sv input{width:auto}
 .hero select,.hero button{width:auto;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:9px;padding:9px 11px;font:inherit;cursor:pointer}.hero option{color:#000}
 textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
-nav button{font-size:13px}
+nav button{font-size:13px;white-space:nowrap;flex:1 0 auto;padding:9px 12px}
+details{border-top:1px solid var(--line);padding:8px 0}summary{cursor:pointer;font-weight:500}
 .fx .fq,.fx .fu{display:none}.edw{border-top:1px solid var(--line);padding-top:8px}.row .eb{color:var(--pro);font-size:16px}
 .hide{display:none}
 @media(max-width:480px){.ring svg{flex-basis:110px;width:110px;height:110px}.mgrid{grid-template-columns:1fr 1fr}}
@@ -76,7 +77,7 @@ nav button{font-size:13px}
 <body>
 <div class="wrap">
 <div class="hero"><div><h1>NutriTrack</h1><p>Calories, protein, carbs, fat and fibre in one place</p></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button id="installBtn" class="hide" aria-label="Install app">Install app</button><select id="who" aria-label="Family member"></select><button id="addWho" aria-label="Add family member">+</button><input type="date" id="date" aria-label="Date"></div></div>
-<nav id="nav"><button data-t="profile">Profile</button><button data-t="log">Food log</button><button data-t="dash">Dashboard</button><button data-t="plan">Plan</button><button data-t="coach">Coach</button></nav>
+<nav id="nav"><button data-t="profile">Profile</button><button data-t="log">Food log</button><button data-t="dash">Dashboard</button><button data-t="plan">Plan</button><button data-t="mom" id="momTab" class="hide">Mom</button><button data-t="coach">Coach</button></nav>
 
 <section id="profile" class="hide"><div class="card">
  <h2>Your health details</h2>
@@ -84,7 +85,7 @@ nav button{font-size:13px}
  <div class="grid">
   <div><label>Name</label><input id="p_name"></div>
   <div><label>Age (years)</label><input id="p_age" type="number" min="10" max="100"></div>
-  <div><label>Sex</label><select id="p_sex"><option value="m">Male</option><option value="f">Female</option></select></div>
+  <div><label>Sex</label><select id="p_sex"><option value="m">Male</option><option value="f">Female</option><option value="o">Other</option></select></div>
   <div><label>Height (cm)</label><input id="p_h" type="number" min="100" max="230"></div>
   <div><label>Weight (kg)</label><input id="p_w" type="number" min="25" max="300" step="0.1"></div>
   <div><label>Target weight (kg)</label><input id="p_tw" type="number" min="25" max="300" step="0.1"></div>
@@ -98,7 +99,11 @@ nav button{font-size:13px}
   <option value="-500">Lose weight (about 0.5 kg/week)</option>
   <option value="0">Maintain weight</option>
   <option value="400">Gain weight (about 0.4 kg/week)</option></select></div>
- <div><label>Health conditions or notes (optional)</label><input id="p_note" placeholder="e.g. diabetes, thyroid"></div>
+ <div id="momBox" class="card hide" style="background:var(--bg);margin:12px 0 0"><h2 style="font-size:15px">Pregnancy and postpartum (optional)</h2><label>Current stage</label><select id="m_st"><option value="">Not applicable</option><option value="preg">Pregnant</option><option value="pp">After delivery (postpartum)</option></select>
+<div id="m_preg" class="hide grid" style="margin-top:10px"><div><label>Pregnancy week (1–42)</label><input id="m_wk" type="number" min="1" max="42"></div><div><label>Weight before pregnancy (kg)</label><input id="m_pw" type="number" min="30" max="200" step="0.1"></div><div style="grid-column:1/-1"><label>Expecting twins?</label><select id="m_tw"><option value="">No</option><option value="1">Yes</option></select></div></div>
+<div id="m_pp" class="hide grid" style="margin-top:10px"><div><label>Weeks since delivery</label><input id="m_pwk" type="number" min="0" max="104"></div><div><label>Breastfeeding</label><select id="m_bf"><option value="full">Exclusively</option><option value="part">Partly</option><option value="none">No</option></select></div><div><label>Delivery type</label><select id="m_dl"><option value="v">Vaginal</option><option value="c">C-section</option></select></div></div>
+<div class="mute" style="margin-top:8px">Saving this adds a Mom tab with targets, tips and a daily checklist.</div></div>
+<div style="margin-top:12px"><label>Health conditions or notes (optional)</label><input id="p_note" placeholder="e.g. diabetes, thyroid"></div>
  <div style="margin-top:14px"><button class="btn" id="saveP">Save and calculate</button></div>
  <div id="pres" class="stats hide"></div>
 </div></section>
@@ -112,6 +117,7 @@ nav button{font-size:13px}
  <div class="card"><h2>Smart food swaps</h2><div id="swapOut"></div></div>
  <div class="card"><h2>Eating while travelling</h2><select id="tmode"></select><div id="travOut" style="margin-top:8px"></div></div>
 </section>
+<section id="mom" class="hide"><div id="momOut"></div></section>
 <section id="coach" class="hide">
  <div class="card"><h2>AI food scanner</h2><p class="mute" style="margin-top:0">Photograph your plate. AI identifies foods and estimates portions in grams. Needs an API key (see AI settings below).</p><div class="grid"><div><label>Log into</label><select id="aiMeal"></select></div><div><label>Hint (optional)</label><input id="scanHint" placeholder="e.g. 2 rotis, dal"></div></div><div style="margin:10px 0"><input type="file" id="scanFile" accept="image/*" capture="environment"></div><button class="btn" id="scanBtn">Scan and estimate</button><div id="scanOut"></div></div>
  <div class="card"><h2>Restaurant dish or menu estimator</h2><textarea id="menuTxt" rows="3" placeholder="Type a dish (e.g. butter chicken with 2 naan) or paste menu text"></textarea><div style="margin:8px 0"><input type="file" id="menuFile" accept="image/*"></div><button class="btn" id="menuBtn">Estimate nutrition</button><div id="menuOut"></div></div>
@@ -302,6 +308,16 @@ Peanuts (small handful)|160|7|5|14|2.4
 Peanut butter (1 tbsp)|95|4|3|8|1
 Sprouts salad (1 bowl)|100|8|15|1|5
 Boiled chickpeas (1/2 cup)|135|7|22|2|6
+#Mom and baby
+Ragi porridge (1 bowl)|150|4|28|2|4
+Dates (3)|70|.6|18|.1|2
+Methi paratha (1)|220|5|30|9|4
+Dink laddu (1)|250|4|28|14|2
+Panjiri (2 tbsp)|120|2|14|6|1
+Dry fruit milk (1 glass)|230|9|22|11|1.5
+Fig, dried (2)|95|1|24|.4|4
+Flaxseed (1 tbsp)|55|1.9|3|4.3|2.8
+Jaggery (1 tsp)|20|0|5|0|0
 #Fruits
 Apple (1)|95|.5|25|.3|4.4
 Banana (1)|105|1.3|27|.4|3
@@ -349,23 +365,29 @@ $("date").value=iso(new Date());$("month").value=$("date").value.slice(0,7);
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 function calc(p){
- const bmr=10*p.w+6.25*p.h-5*p.age+(p.sex==="m"?5:-161),tdee=bmr*p.act;
- const kcal=Math.max(p.sex==="m"?1500:1200,Math.round(tdee+p.goal));
- return{bmr:Math.round(bmr),tdee:Math.round(tdee),bmi:(p.w/Math.pow(p.h/100,2)).toFixed(1),
-  t:{kcal,p:Math.round(kcal*.2/4),c:Math.round(kcal*.5/4),f:Math.round(kcal*.3/9),fb:Math.max(25,Math.round(kcal/1000*14))}};
+ const bmr=10*p.w+6.25*p.h-5*p.age+(p.sex==="m"?5:p.sex==="f"?-161:-78),tdee=bmr*p.act,m=p.mom;
+ let adj=p.goal,fl=p.sex==="m"?1500:1200,ex=0;
+ if(m&&m.st==="preg"){ex=m.wk>=28?450:m.wk>=13?340:0;adj=ex;fl=1600}
+ else if(m&&m.st==="pp"){ex=m.bf==="full"?400:m.bf==="part"?200:0;adj=(m.wk<8?0:Math.max(p.goal,-300))+ex;fl=m.bf==="none"?1200:1800}
+ const kcal=Math.max(fl,Math.round(tdee+adj));
+ let pr=Math.round(kcal*.2/4);if(m)pr=Math.max(pr,Math.round(p.w*(m.st==="preg"?1.1:1.3)));
+ const fat=Math.round(kcal*.3/9),carb=m?Math.max(m.st==="preg"?175:210,Math.round((kcal-pr*4-fat*9)/4)):Math.round(kcal*.5/4);
+ return{bmr:Math.round(bmr),tdee:Math.round(tdee),ex,bmi:(p.w/Math.pow(p.h/100,2)).toFixed(1),t:{kcal,p:pr,c:carb,f:fat,fb:Math.max(m?28:25,Math.round(kcal/1000*14))}};
 }
 const bmiLabel=b=>b<18.5?"Underweight":b<25?"Healthy range":b<30?"Overweight":"Obese";
 function showResult(){
  if(!profile)return;const c=calc(profile);$("pres").classList.remove("hide");
- $("pres").innerHTML=`<div><b>${c.bmi}</b><span>BMI · ${bmiLabel(c.bmi)}</span></div><div><b>${c.tdee}</b><span>Maintenance kcal</span></div><div><b>${c.t.kcal}</b><span>Daily target kcal</span></div><div><b style="color:var(--pro)">${c.t.p} g</b><span>Protein</span></div><div><b style="color:var(--carb)">${c.t.c} g</b><span>Carbs</span></div><div><b style="color:var(--fat)">${c.t.f} g</b><span>Fat</span></div><div style="grid-column:2"><b style="color:var(--fib)">${c.t.fb} g</b><span>Fibre</span></div>`;
+ $("pres").innerHTML=`<div><b>${c.bmi}</b><span>BMI · ${bmiLabel(c.bmi)}</span></div><div><b>${c.tdee}</b><span>Maintenance kcal</span></div><div><b>${c.t.kcal}</b><span>Daily target kcal</span></div><div><b style="color:var(--pro)">${c.t.p} g</b><span>Protein</span></div><div><b style="color:var(--carb)">${c.t.c} g</b><span>Carbs</span></div><div><b style="color:var(--fat)">${c.t.f} g</b><span>Fat</span></div><div style="grid-column:2"><b style="color:var(--fib)">${c.t.fb} g</b><span>Fibre</span></div>${profile.mom?`<div class="mute" style="grid-column:1/-1;text-align:left">${calcNote(profile)}</div>`:""}`;
 }
 function fillProfile(){
  if(!profile)return;const p=profile;
- $("p_name").value=p.name||"";$("p_age").value=p.age;$("p_sex").value=p.sex;$("p_h").value=p.h;$("p_w").value=p.w;$("p_tw").value=p.tw||"";$("p_act").value=p.act;$("p_goal").value=p.goal;$("p_note").value=p.note||"";showResult();
+ $("p_name").value=p.name||"";$("p_age").value=p.age;$("p_sex").value=p.sex;$("p_h").value=p.h;$("p_w").value=p.w;$("p_tw").value=p.tw||"";$("p_act").value=p.act;$("p_goal").value=p.goal;$("p_note").value=p.note||"";const mm=p.mom||{};$("m_st").value=mm.st||"";$("m_wk").value=mm.st==="preg"?mm.wk:"";$("m_pw").value=mm.st==="preg"?mm.pw:"";$("m_tw").value=mm.tw?"1":"";$("m_pwk").value=mm.st==="pp"?mm.wk:"";$("m_bf").value=mm.bf||"full";$("m_dl").value=mm.dl||"v";momUi();showResult();
 }
 $("saveP").onclick=()=>{
  const p={name:$("p_name").value.trim(),age:+$("p_age").value,sex:$("p_sex").value,h:+$("p_h").value,w:+$("p_w").value,tw:+$("p_tw").value,act:+$("p_act").value,goal:+$("p_goal").value,note:$("p_note").value.trim()};
  if(!p.age||!p.h||!p.w){alert("Enter your age, height and weight to continue.");return}
+ const st=$("m_st").value;p.mom=null;
+ if(p.sex!=="m"&&st){if(st==="preg"){const wk=+$("m_wk").value;if(!(wk>=1&&wk<=42)){alert("Enter your pregnancy week (1–42).");return}p.mom={st,wk,pw:+$("m_pw").value||p.w,tw:$("m_tw").value==="1"}}else p.mom={st,wk:+$("m_pwk").value||0,bf:$("m_bf").value,dl:$("m_dl").value}}
  profile=p;save();showResult();setTimeout(()=>tab("log"),1200);
 };
 
@@ -373,7 +395,7 @@ const dayItems=d=>logs[d]||(logs[d]={breakfast:[],lunch:[],dinner:[],snacks:[]})
 function tot(items){const o={kcal:0,p:0,c:0,f:0,fb:0};(items||[]).forEach(x=>NUT.forEach(n=>o[n[0]]+=+x[n[0]]||0));return o}
 function dayTot(d){const l=logs[d],o={kcal:0,p:0,c:0,f:0,fb:0};if(l)MEALS.forEach(m=>{const t=tot(l[m[0]]);NUT.forEach(n=>o[n[0]]+=t[n[0]])});return o}
 
-const GW=[[/1\/2 cup/,100],[/yogurt/,245],[/cheesecake/,120],[/cake/,100],[/pizza/,110],[/bread slice/,30],[/cheese slice/,20],[/chapati/,40],[/paratha/,80],[/naan/,90],[/puri \(1\)/,30],[/idli/,40],[/uttapam/,100],[/medu vada/,45],[/vada pav/,120],[/dosa/,90],[/samosa/,60],[/2 eggs/,110],[/^(boiled|fried) egg/,50],[/^egg white/,33],[/banana/,118],[/apple/,180],[/^orange \(1\)/,130],[/guava/,100],[/avocado/,100],[/mango/,165],[/grapes|strawberries/,150],[/pineapple/,165],[/papaya/,145],[/watermelon/,150],[/pomegranate/,90],[/biscuits/,20],[/cookie/,30],[/muffin/,100],[/donut/,60],[/brownie/,60],[/gulab jamun/,40],[/rasgulla/,50],[/jalebi/,60],[/momos|nuggets|spring roll|dim sum|tempura|satay/,100],[/french fries/,120],[/burger/,200],[/hot dog/,100],[/croissant/,60],[/waffle/,75],[/pancakes/,110],[/tacos/,150],[/burrito/,250],[/sushi roll/,150],[/nigiri/,60],[/sashimi/,100],[/chocolate bar/,45],[/dark chocolate/,20],[/ice cream/,66],[/almonds/,12],[/cashews/,15],[/walnuts/,10],[/peanuts/,30],[/peanut butter/,16],[/popcorn/,20],[/chips \(/,30],[/mochi/,40],[/tsp/,5],[/tbsp/,16],[/pakora|dhokla/,80],[/pani puri/,100],[/pav bhaji/,300],[/tikka|tandoori/,120],[/glass/,240],[/can\)|bottle/,330],[/scoop/,30],[/cup\)/,200],[/bowl/,200],[/plate/,300]];
+const GW=[[/dates \(3\)/,25],[/dink laddu/,45],[/panjiri/,30],[/fig, dried/,30],[/flaxseed|jaggery/,10],[/1\/2 cup/,100],[/yogurt/,245],[/cheesecake/,120],[/cake/,100],[/pizza/,110],[/bread slice/,30],[/cheese slice/,20],[/chapati/,40],[/paratha/,80],[/naan/,90],[/puri \(1\)/,30],[/idli/,40],[/uttapam/,100],[/medu vada/,45],[/vada pav/,120],[/dosa/,90],[/samosa/,60],[/2 eggs/,110],[/^(boiled|fried) egg/,50],[/^egg white/,33],[/banana/,118],[/apple/,180],[/^orange \(1\)/,130],[/guava/,100],[/avocado/,100],[/mango/,165],[/grapes|strawberries/,150],[/pineapple/,165],[/papaya/,145],[/watermelon/,150],[/pomegranate/,90],[/biscuits/,20],[/cookie/,30],[/muffin/,100],[/donut/,60],[/brownie/,60],[/gulab jamun/,40],[/rasgulla/,50],[/jalebi/,60],[/momos|nuggets|spring roll|dim sum|tempura|satay/,100],[/french fries/,120],[/burger/,200],[/hot dog/,100],[/croissant/,60],[/waffle/,75],[/pancakes/,110],[/tacos/,150],[/burrito/,250],[/sushi roll/,150],[/nigiri/,60],[/sashimi/,100],[/chocolate bar/,45],[/dark chocolate/,20],[/ice cream/,66],[/almonds/,12],[/cashews/,15],[/walnuts/,10],[/peanuts/,30],[/peanut butter/,16],[/popcorn/,20],[/chips \(/,30],[/mochi/,40],[/tsp/,5],[/tbsp/,16],[/pakora|dhokla/,80],[/pani puri/,100],[/pav bhaji/,300],[/tikka|tandoori/,120],[/glass/,240],[/can\)|bottle/,330],[/scoop/,30],[/cup\)/,200],[/bowl/,200],[/plate/,300]];
 function gram(n){const c=cust.find(x=>x.name===n);if(c&&c.w)return c.w;const m=n.match(/\((\d+) g\)/);if(m)return +m[1];for(const [re,g] of GW)if(re.test(n.toLowerCase()))return g;return 100}
 let ed=null;
 const frm=(md,k,i,btns)=>`<div class="add ${md==="food"?"fx":""}" data-mode="${md}" data-k="${k}" data-i="${i}"><input list="foods" placeholder="Search foods or type a new one" class="fn" style="grid-column:1/-1"><input type="number" min="0.25" step="0.25" value="1" class="fq" aria-label="Quantity"><select class="fu" aria-label="Unit"><option value="s">servings</option><option value="g">grams</option></select><input type="number" min="0" placeholder="kcal" class="fk" aria-label="Calories"><div class="gw hide">1 serving ≈ <input type="number" min="1" class="fw" value="100" aria-label="Grams per serving"> g. Change the grams or quantity and the nutrients update.</div><div class="m"><input type="number" min="0" step="0.1" placeholder="Protein g" class="fp"><input type="number" min="0" step="0.1" placeholder="Carbs g" class="fc"><input type="number" min="0" step="0.1" placeholder="Fat g" class="ff"><input type="number" min="0" step="0.1" placeholder="Fibre g" class="fb"></div>${btns}</div>`;
@@ -449,11 +471,11 @@ function renderDash(){renderExtras();
  $("mStats").innerHTML=`<div><b style="color:var(${N[3]})">${r1(avg)}</b><span>Avg ${N[2]} / day</span></div><div><b>${Math.round(sm).toLocaleString()}</b><span>Month total (${N[2]})</span></div><div><b>${hit}/${lg.length}</b><span>Days ${metric==="kcal"?"within":"meeting"} goal</span></div>`;
 }
 
-function tab(t){ed=null;
- if(t!=="profile"&&!profile)t="profile";
- ["profile","log","dash","plan","coach"].forEach(s=>$(s).classList.toggle("hide",s!==t));
+function tab(t){ed=null;momTabVis();
+ if(t!=="profile"&&!profile)t="profile";if(t==="mom"&&!(profile&&profile.mom))t="log";
+ ["profile","log","dash","plan","mom","coach"].forEach(s=>$(s).classList.toggle("hide",s!==t));
  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
- if(t==="log")renderLog();if(t==="dash")renderDash();if(t==="plan")renderPlan();if(t==="coach")renderCoach();
+ if(t==="log")renderLog();if(t==="dash")renderDash();if(t==="plan")renderPlan();if(t==="mom")renderMom();if(t==="coach")renderCoach();
  try{history.replaceState(null,"","#"+t)}catch(e){}
 }
 document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>tab(b.dataset.t));
@@ -468,7 +490,7 @@ const mkAI=x=>{const g=+x.grams||0,b={kcal:+x.kcal||0,p:+x.p||0,c:+x.c||0,f:+x.f
 const DAYS=["Sundays","Mondays","Tuesdays","Wednesdays","Thursdays","Fridays","Saturdays"];
 /* family profiles */
 function renderWho(){$("who").innerHTML=fam.map(m=>`<option value="${m.id}" ${m.id===pid?"selected":""}>${esc(m.name)}</option>`).join("")}
-function resetForm(){["p_name","p_age","p_h","p_w","p_tw","p_note"].forEach(i=>$(i).value="");$("pres").classList.add("hide")}
+function resetForm(){["p_name","p_age","p_h","p_w","p_tw","p_note","m_wk","m_pw","m_pwk"].forEach(i=>$(i).value="");$("m_st").value="";momUi();$("pres").classList.add("hide")}
 function switchProfile(){load();resetForm();fillProfile();renderWho();tab(profile?"log":"profile")}
 $("who").onchange=()=>{try{localStorage.setItem("nt_pid",$("who").value)}catch(e){}switchProfile()};
 $("addWho").onclick=()=>{const n=prompt("Family member’s name?");if(!n||!n.trim())return;const id="p"+Date.now();fam.push({id,name:n.trim()});try{localStorage.setItem("nt_fam",JSON.stringify(fam));localStorage.setItem("nt_pid",id)}catch(e){}switchProfile()};
@@ -524,7 +546,7 @@ const BAD=/beer|wine|cola|whey|chips|donut|cake|brownie|cookie|chocolate|ice cre
 const POOL={breakfast:/idli|dosa|poha|upma|oats|egg|omelette|toast|muesli|cornflakes|pancake|paratha|uttapam|curd|banana|milk|bread|khichdi|apple|papaya/i,lunch:/rice|roti|chapati|dal|rajma|chole|curry|paneer|sambar|salad|khichdi|biryani|vegetable|aloo|bhindi|palak|tikka|fish|raita|curd|noodles|pasta|soup|tofu|stir fry|sandwich|bibimbap|tandoori|grilled/i,snacks:/apple|banana|orange|guava|papaya|almonds|walnuts|cashews|sprouts|chickpeas|curd|buttermilk|popcorn|greek|peanuts|coconut water|strawberries|pomegranate|tea|edamame/i};
 POOL.dinner=POOL.lunch;
 const rng=s=>()=>(s=(s*1664525+1013904223)>>>0)/4294967296;
-function planDay(seed,veg,tg){const R=rng(seed),all=allFoods().filter(f=>!BAD.test(f[0])&&!(veg&&NV.test(f[0]))),sp={breakfast:.25,lunch:.35,dinner:.3,snacks:.1},out={};
+function planDay(seed,veg,tg){const R=rng(seed),all=allFoods().filter(f=>!BAD.test(f[0])&&!(veg&&NV.test(f[0]))&&!(profile.mom&&/sashimi|nigiri|sushi/i.test(f[0]))),sp={breakfast:.25,lunch:.35,dinner:.3,snacks:.1},out={};
  MEALS.forEach(([k])=>{const T=tg.kcal*sp[k],pool=all.filter(f=>POOL[k].test(f[0])&&f[1]>=30&&f[1]<=T);let best=[],bs=1e9;
   for(let i=0;i<300&&pool.length;i++){const n=2+(R()*2|0),c=[];for(let j=0;j<n;j++)c.push(pool[R()*pool.length|0]);if(new Set(c.map(x=>x[0])).size<n)continue;
    const s=c.reduce((a,f)=>[a[0]+f[1],a[1]+f[2],a[2]+f[5]],[0,0,0]),sc=Math.abs(s[0]-T)/T-s[1]/Math.max(1,s[0])*2-s[2]/Math.max(1,s[0])*6;if(sc<bs){bs=sc;best=c}}
@@ -603,10 +625,10 @@ $("recBtn").onclick=()=>{const inp=$("ingTxt").value.toLowerCase().split(/,|;|\b
  if(!inp.length)$("recOut").innerHTML='<div style="color:var(--over)">List a few ingredients first.</div>';else if(!r.length)$("recOut").innerHTML='<div class="mute">No built-in recipe matched. Try “Ask AI for recipes”.</div>';else show($("recOut"),r)};
 let chat=[];
 function drawChat(){$("chat").innerHTML=chat.map(m=>`<div style="margin:6px 0;padding:8px 10px;border-radius:10px;background:${m[0]==="u"?"var(--track)":"var(--bg)"}">${esc(m[1]).replace(/\n/g,"<br>")}</div>`).join("")}
-function ctx(){const tg=calc(profile).t,td=todayS();return JSON.stringify({profile:{age:profile.age,sex:profile.sex,height_cm:profile.h,weight_kg:profile.w,target_weight_kg:profile.tw,goal_kcal_adjust:profile.goal,notes:profile.note},daily_targets:tg,today:dayTot(td),today_foods:MEALS.map(([k])=>[k,((logs[td]||{})[k]||[]).map(x=>x.name)]),recent_days:dkeys().slice(-7).map(d=>({d,...dayTot(d)}))})}
+function ctx(){const tg=calc(profile).t,td=todayS();return JSON.stringify({profile:{age:profile.age,sex:profile.sex,height_cm:profile.h,weight_kg:profile.w,target_weight_kg:profile.tw,goal_kcal_adjust:profile.goal,notes:profile.note,maternal:profile.mom||null},daily_targets:tg,today:dayTot(td),today_foods:MEALS.map(([k])=>[k,((logs[td]||{})[k]||[]).map(x=>x.name)]),recent_days:dkeys().slice(-7).map(d=>({d,...dayTot(d)}))})}
 async function send(q){q=q.trim();if(!q)return;chat.push(["u",q]);$("chatIn").value="";drawChat();
  try{const m=chat.slice(-8).map(x=>({role:x[0]==="u"?"user":"assistant",content:x[1]}));while(m.length&&m[0].role!=="user")m.shift();
-  chat.push(["a",await ai("You are NutriTrack’s friendly nutrition assistant for Indian and global diets. Use the user’s data below. Be concise (under 120 words), practical, give gram and kcal numbers. This is general guidance, not medical advice; for medical conditions suggest a doctor or dietitian.\nDATA: "+ctx(),m,700)])}
+  chat.push(["a",await ai("You are NutriTrack’s friendly nutrition assistant for Indian and global diets. Use the user’s data below. Be concise (under 120 words), practical, give gram and kcal numbers. If the user is pregnant or breastfeeding, keep every suggestion pregnancy- and lactation-safe. This is general guidance, not medical advice; for medical conditions suggest a doctor or dietitian.\nDATA: "+ctx(),m,700)])}
  catch(e){chat.push(["a","⚠ "+e.message])}drawChat()}
 $("chatSend").onclick=()=>send($("chatIn").value);$("chatIn").onkeydown=e=>{if(e.key==="Enter")send($("chatIn").value)};
 document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>send(b.dataset.q));
@@ -615,8 +637,49 @@ $("keyClear").onclick=()=>{try{localStorage.removeItem("nt_key")}catch(e){}$("ke
 $("aiMeal").innerHTML=MEALS.map(m=>`<option value="${m[0]}">${m[1]}</option>`).join("");
 function renderCoach(){try{$("keyIn").value=localStorage.getItem("nt_key")||"";$("modelIn").value=localStorage.getItem("nt_model")||"claude-sonnet-5-5"}catch(e){}if(!chat.length)chat.push(["a","Hi! Ask me about today’s meals, protein, fibre, or what to eat next."]);drawChat()}
 
+/* pregnancy and postpartum module */
+function momUi(){const ok=$("p_sex").value!=="m";$("momBox").classList.toggle("hide",!ok);const st=ok?$("m_st").value:"";$("m_preg").classList.toggle("hide",st!=="preg");$("m_pp").classList.toggle("hide",st!=="pp")}
+$("p_sex").onchange=momUi;$("m_st").onchange=momUi;
+function momTabVis(){$("momTab").classList.toggle("hide",!(profile&&profile.mom))}
+function calcNote(p){const c=calc(p),m=p.mom;return m.st==="preg"?`Pregnancy week ${m.wk}: includes ${c.ex?"+"+c.ex+" kcal extra":"no extra calories yet (first trimester)"}, higher protein, and weight-loss goals are paused. These are estimates, so follow your doctor’s advice. See the Mom tab.`:`Postpartum: ${c.ex?"includes +"+c.ex+" kcal for breastfeeding, ":""}higher protein, and a safe minimum calorie level. These are estimates, so follow your doctor’s advice. See the Mom tab.`}
+const MTIPS={T1:["Nausea? Eat small, frequent meals and keep dry snacks like toast, poha or murmura nearby. Sip ginger or lemon water between meals.","Folate matters most now: dals, green leafy vegetables, oranges and well-cooked sprouts. Take folic acid exactly as prescribed.","You need no extra calories yet. Focus on food quality, not eating for two.","If you can’t keep food or fluids down for a day, call your doctor."],
+T2:["Appetite usually returns. Add about 340 kcal a day, for example a glass of milk with nuts and a fruit.","Iron and calcium needs rise: have dal or greens with lemon, plus 2–3 servings of milk, curd, paneer or ragi.","Omega-3: 2 servings a week of low-mercury fish (rohu, sardine, salmon), or walnuts and flaxseed if vegetarian.","Ask your doctor about the blood sugar test usually done around 24–28 weeks."],
+T3:["Add about 450 kcal a day, spread over 5–6 small meals as the baby presses on your stomach.","Heartburn: avoid spicy or fried food at night and finish eating at least 2 hours before lying down.","Constipation: fibre-rich foods, 2+ litres of fluids, soaked figs or prunes, and a daily walk.","Keep up iron-rich foods with vitamin C, and ask about your haemoglobin level.","Pack easy snacks for the hospital bag, and follow your doctor’s advice on counting baby movements."],
+E:["Rest and food come first. Eat protein at every meal to help healing: dal, egg, paneer, fish, chicken.","Add vitamin C (lemon, amla, orange, guava) for tissue repair and iron absorption.","After a C-section: stay hydrated, eat fibre to avoid straining, and walk gently as your doctor allows.","Don’t diet now. Your body is healing and, if you breastfeed, making milk."],
+R:["If your doctor agrees, gentle weight loss can start around 6–8 weeks: no more than about 0.5 kg a week while breastfeeding.","Stay at or above 1,800 kcal a day while breastfeeding. Very low intake can reduce milk supply and energy.","Keep one-hand snacks ready: nuts, fruit, boiled eggs, curd, roasted chana.","Hair fall and tiredness are common. Ask your doctor to check iron, vitamin D and B12."],
+L:["Build a steady routine: balanced plates, regular meals and daily movement.","Vegetarians: ask your doctor about vitamin B12, iron and omega-3 (DHA).","If you’ve stopped breastfeeding, update your profile and your calorie target adjusts.","Sleep and stress affect appetite. Ask for help and rest when you can."]};
+const MFEED=["For milk supply, frequent feeding matters more than any one food. Methi, oats, jeera water, dink laddu and panjiri are traditional favourites; enjoy them, but laddus are high in ghee and sugar.","Drink a glass of water with each feed, and aim for about 3 litres of total fluids a day.","Limit caffeine to about 200 mg (1–2 cups of coffee). If you drink alcohol, wait at least 2 hours per drink before nursing, or avoid it, and ask your doctor.","If your baby is fussy, ask your paediatrician before cutting out foods."];
+const MCOMMON={preg:[["Nausea","Small frequent meals, dry snacks on waking, ginger or lemon water, avoid strong smells. Ask your doctor before taking any anti-nausea medicine or vitamin B6."],["Heartburn","Eat small portions, avoid spicy, fried and very sour foods at night, stay upright for 2 hours after eating, raise your head when sleeping."],["Constipation","25–30 g fibre a day, 2+ litres of fluids, soaked figs or prunes, daily walking. Check with your doctor before using isabgol or laxatives. Iron tablets can also cause it."],["Low iron or anaemia","Dal, rajma, chana, spinach, dates, eggs, chicken or fish with lemon or amla. Avoid tea or coffee within an hour of meals, and keep calcium tablets 2 hours apart from iron."],["High blood sugar or gestational diabetes","Follow the plan from your doctor or dietitian. In general: whole grains, carbs spread across meals, protein with every carb, fewer sweets and fruit juices, and never skip meals."],["Leg cramps and low energy","Drink enough fluids, eat magnesium-rich foods (nuts, banana, spinach), stretch gently and tell your doctor if cramps are frequent."]],
+pp:[["Worried about milk supply","Feed or pump often, drink to thirst, eat regular meals and sleep when you can. See a lactation consultant if the baby isn’t gaining weight or has few wet nappies."],["Baby blues or postpartum depression","Mood swings in the first 2 weeks are common. If sadness, anxiety or hopelessness lasts longer, or you ever think of harming yourself or the baby, speak to your doctor or a trusted person straight away."],["Hair fall","Common 2–4 months after birth. Eat enough protein, iron and zinc, and ask your doctor to check iron, vitamin D and thyroid if it’s heavy."],["Constipation","Fibre, fluids, soaked figs or prunes, and gentle walking. After a C-section or stitches, avoid straining and ask your doctor about stool softeners."]]};
+const MEAT=[["Folate","Dals, spinach and methi, oranges, cooked sprouts, broccoli, avocado"],["Iron","Dal, rajma, chana, spinach, dates, eggs, chicken, fish. Pair with lemon or amla"],["Calcium","Milk, curd, paneer, ragi, almonds, sesame (til), tofu"],["Protein","Dal, eggs, paneer, curd, tofu, fish, chicken, nuts"],["Omega-3 (DHA)","Rohu, sardine, salmon, walnuts, flaxseed"],["Fibre","Whole grains, vegetables, fruit with skin, oats, ragi, dals"],["Iodine","Iodised salt (in moderation), milk, curd, eggs"]];
+const MAVOID=["Alcohol and smoking","Raw or undercooked meat, fish and eggs, including sushi and sashimi","Unpasteurised milk and soft cheeses","High-mercury fish: shark, swordfish, king mackerel","Raw sprouts, and salads or cut fruit left out for hours (cook sprouts well)","Raw or unripe papaya and large amounts of pineapple, unless your doctor says it’s fine","More than about 200 mg caffeine a day","Liver and high-dose vitamin A supplements"];
+const MQUICK=["Palak paneer (1 bowl)","Dal tadka (1 bowl)","Ragi porridge (1 bowl)","Dates (3)","Curd / dahi (1 bowl)","Milk, toned (1 glass)","Boiled egg (1)","Almonds (10)","Orange (1)","Sprouts salad (1 bowl)"],MQPP=["Methi paratha (1)","Dink laddu (1)","Oats porridge (1 bowl)","Dry fruit milk (1 glass)"];
+const CKP=["Took supplements exactly as my doctor prescribed","Drank 8–10 glasses of water or other fluids","Ate 3 meals plus 2–3 snacks","Protein with every meal (dal, egg, paneer, fish, chicken, tofu)","2–3 servings of calcium foods (milk, curd, paneer, ragi)","Iron-rich food with vitamin C (dal or greens with lemon or orange)","Gentle walk or doctor-approved activity"],CKA=["Took supplements as advised by my doctor","Drank water with every feed (about 3 litres a day)","Ate 3 meals plus 2–3 snacks","Protein with every meal","2–3 servings of calcium foods","Iron-rich food with vitamin C","Rested when the baby slept","Gentle movement or pelvic floor exercises, as cleared by my doctor"];
+const ckKey=()=>"nt_mc_"+pid+"_"+todayS(),ckGet=()=>{try{return JSON.parse(localStorage.getItem(ckKey())||"[]")}catch(e){return[]}};
+function momHtml(){
+ const m=profile.mom,pg=m.st==="preg",t=calc(profile).t,c=calc(profile),td=dayTot(todayS()),stg=pg?(m.wk<13?"T1":m.wk<28?"T2":"T3"):(m.wk<6?"E":m.wk<12?"R":"L");
+ const sub=pg?`${{T1:"First",T2:"Second",T3:"Third"}[stg]} trimester · about ${Math.max(0,40-m.wk)} weeks to go${m.tw?" · twins":""}`:`${{E:"Early recovery",R:"Rebuilding",L:"Ongoing recovery"}[stg]} · ${m.bf==="full"?"exclusively breastfeeding":m.bf==="part"?"partly breastfeeding":"not breastfeeding"} · ${m.dl==="c"?"C-section":"vaginal birth"}`;
+ const bar=(n,v,g,u,col)=>`<div style="margin-bottom:8px"><div class="meal-h" style="margin:0"><span>${n}</span><span><b>${r1(v)}</b> / ${g} ${u}</span></div><div class="bar"><i style="width:${Math.min(100,v/g*100)}%;background:var(${col})"></i></div></div>`;
+ const ck=ckGet(),items=pg?CKP:CKA,list=(a)=>`<ul style="padding-left:18px;margin:6px 0 0">${a.map(x=>`<li style="margin-bottom:4px">${x}</li>`).join("")}</ul>`;
+ let h=`<div class="card" style="background:linear-gradient(120deg,var(--fat),var(--fib));color:#fff;border:0"><h2 style="margin:0 0 4px">${pg?"Pregnancy · week "+m.wk:"Postpartum · week "+m.wk}</h2><div>${sub}</div></div>`;
+ h+=`<div class="card"><h2>Your daily targets</h2>${bar("Calories",td.kcal,t.kcal,"kcal","--cal")}${bar("Protein",td.p,t.p,"g","--pro")}${bar("Fibre",td.fb,t.fb,"g","--fib")}<div class="mute">${c.ex?`Includes about +${c.ex} kcal ${pg?"for pregnancy":"for breastfeeding"}. `:pg?"No extra calories needed in the first trimester. ":""}Targets are estimates. Weight-loss goals are ${pg?"paused during pregnancy":"gentle and limited after delivery"}.</div></div>`;
+ if(pg){const bm=m.pw/Math.pow(profile.h/100,2),r=bm<18.5?(m.tw?null:[12.5,18]):bm<25?(m.tw?[17,25]:[11.5,16]):bm<30?(m.tw?[14,23]:[7,11.5]):(m.tw?[11,19]:[5,9]),g=r1(profile.w-m.pw);
+  h+=`<div class="card"><h2>Weight gain guide</h2><div class="stats"><div><b>${r1(bm)}</b><span>Pre-pregnancy BMI</span></div><div><b>${g>0?"+":""}${g} kg</b><span>Gained so far</span></div><div><b>${r?r[0]+"–"+r[1]+" kg":"Ask doctor"}</b><span>Total gain advised</span></div></div><div class="mute" style="margin-top:8px">Gain is usually small in the first trimester (about 0.5–2 kg) and steadier later. Update your weight in Profile after check-ups.</div></div>`}
+ h+=`<div class="card"><h2>Today’s checklist</h2>${items.map((x,i)=>`<label style="display:flex;gap:8px;align-items:center;color:var(--ink);margin:6px 0"><input type="checkbox" class="mck" data-i="${i}" style="width:auto" ${ck.includes(i)?"checked":""}> ${x}</label>`).join("")}</div>`;
+ h+=`<div class="card"><h2>Tips for you right now</h2>${list(MTIPS[stg])}${pg?"":`<h2 style="margin:12px 0 0;font-size:15px">Breastfeeding and fluids</h2>${list(MFEED)}`}</div>`;
+ h+=`<div class="card"><h2>Common concerns</h2>${MCOMMON[pg?"preg":"pp"].map(x=>`<details><summary>${x[0]}</summary><div class="mute" style="margin-top:4px">${x[1]}</div></details>`).join("")}</div>`;
+ h+=`<div class="card"><h2>Foods to eat more of</h2>${MEAT.map(x=>`<div class="row"><b>${x[0]}</b><span style="text-align:right;max-width:70%">${x[1]}</span></div>`).join("")}</div>`;
+ if(pg)h+=`<div class="card"><h2>Foods and habits to avoid</h2>${list(MAVOID)}</div>`;
+ const q=MQUICK.concat(pg?[]:MQPP);
+ h+=`<div class="card"><h2>Quick add to today’s log</h2><div class="tabs">${q.map(n=>`<button class="mq" data-n="${esc(n)}" style="--c:var(--fat)">${esc(nameOf(n))}</button>`).join("")}</div><div class="mute" id="mqres" style="margin-top:8px"></div></div>`;
+ h+=`<div class="card" style="border-left:5px solid var(--over)"><h2>When to call your doctor</h2><div class="mute">${pg?"Vaginal bleeding, severe or persistent headache, blurred vision, sudden swelling of face or hands, severe belly pain, fever, leaking fluid, or reduced baby movements.":"Heavy bleeding, fever, severe pain, a wound that looks red or leaks, breast lumps with redness and fever, trouble breathing, or feeling unable to cope."} Seek urgent care straight away. This page is general guidance, not a substitute for your doctor, midwife or dietitian.</div></div>`;
+ return h}
+function renderMom(){$("momOut").innerHTML=momHtml();
+ document.querySelectorAll(".mck").forEach(b=>b.onchange=()=>{const a=ckGet(),i=+b.dataset.i,j=a.indexOf(i);if(b.checked&&j<0)a.push(i);if(!b.checked&&j>=0)a.splice(j,1);try{localStorage.setItem(ckKey(),JSON.stringify(a))}catch(e){}});
+ document.querySelectorAll(".mq").forEach(b=>b.onclick=()=>{const f=allFoods().find(x=>x[0]===b.dataset.n);if(!f)return;const h=new Date().getHours(),k=h<11?"breakfast":h<16?"lunch":h<18?"snacks":"dinner";dayItems(todayS())[k].push(mk(f,1));save();b.textContent="Added ✓";$("mqres").textContent="Added to "+k+": "+nameOf(f[0])+" ("+f[1]+" kcal)"})}
+
 load();renderWho();fillProfile();
-const h=location.hash.slice(1);tab(profile?(["log","dash","plan","coach","profile"].includes(h)?h:"log"):"profile");
+const h=location.hash.slice(1);tab(profile?(["log","dash","plan","mom","coach","profile"].includes(h)?h:"log"):"profile");
 </script>
 <script>
 let dip=null;

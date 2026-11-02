@@ -1,4 +1,4 @@
-const CACHE = "nutritrack-v1"; // change this number each time you update index.html
+const CACHE = "nutritrack-v2"; // change this number each time you update index.html
 const FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
